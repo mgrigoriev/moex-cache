@@ -13,10 +13,16 @@ development:
   update_stocks:
     class: UpdateStocksJob
     schedule: every 4 hours
+  update_funds:
+    class: UpdateFundsJob
+    schedule: every 4 hours
 
 production:
   update_stocks:
     class: UpdateStocksJob
+    schedule: every 4 hours
+  update_funds:
+    class: UpdateFundsJob
     schedule: every 4 hours
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
