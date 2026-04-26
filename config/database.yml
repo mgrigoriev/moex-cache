@@ -85,16 +85,7 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: moex_cache_production
-    username: moex_cache
-    password: <%= ENV["MOEX_CACHE_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: moex_cache_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: moex_cache_production_queue
-    migrations_paths: db/queue_migrate
+  <<: *default
+  database: moex_cache_production
+  username: moex_cache
+  password: <%= ENV["MOEX_CACHE_DATABASE_PASSWORD"] %>
