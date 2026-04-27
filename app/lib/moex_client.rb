@@ -13,6 +13,12 @@ class MoexClient
   OFZ_SECURITIES_URL = "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQOB/securities.csv" \
                        "?iss.meta=off&iss.only=securities&securities.columns=SECID,SHORTNAME,COUPONPERCENT,COUPONPERIOD,MATDATE,FACEVALUE,ACCRUEDINT"
 
+  CORP_MARKETDATA_URL = "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv" \
+                        "?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,MARKETPRICE,YIELD,DURATION"
+
+  CORP_SECURITIES_URL = "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv" \
+                        "?iss.meta=off&iss.only=securities&securities.columns=SECID,SHORTNAME,COUPONPERCENT,COUPONPERIOD,MATDATE,FACEVALUE,ACCRUEDINT"
+
   def fetch_stocks
     parse(fetch(STOCKS_URL))
   end
@@ -23,6 +29,10 @@ class MoexClient
 
   def fetch_ofz
     fetch_bonds(OFZ_MARKETDATA_URL, OFZ_SECURITIES_URL)
+  end
+
+  def fetch_corporate_bonds
+    fetch_bonds(CORP_MARKETDATA_URL, CORP_SECURITIES_URL)
   end
 
   private

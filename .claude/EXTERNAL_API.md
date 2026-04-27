@@ -87,3 +87,21 @@ SU26212RMFS9;ОФЗ 26212;7.050;182;2028-01-19;1000;18.73
 | `ACCRUEDINT` | `accrued_interest` | НКД |
 
 Записи без `MARKETPRICE` пропускаются.
+
+---
+
+### Корпоративные облигации (TQCB) — два запроса, объединяются по SECID
+
+Идентичны ОФЗ по структуре и логике. Отличие только в URL (борд `TQCB` вместо `TQOB`):
+
+**Запрос 1 — рыночные данные:**
+```
+https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,MARKETPRICE,YIELD,DURATION
+```
+
+**Запрос 2 — параметры бумаги:**
+```
+https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv?iss.meta=off&iss.only=securities&securities.columns=SECID,SHORTNAME,COUPONPERCENT,COUPONPERIOD,MATDATE,FACEVALUE,ACCRUEDINT
+```
+
+Поля и правила обработки идентичны ОФЗ.
