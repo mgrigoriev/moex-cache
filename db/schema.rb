@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_231714) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_27_001229) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_231714) do
     t.string "secid", null: false
     t.datetime "updated_at", null: false
     t.index ["secid"], name: "index_funds_on_secid", unique: true
+  end
+
+  create_table "ofz", force: :cascade do |t|
+    t.decimal "accrued_interest"
+    t.decimal "coupon_percent"
+    t.integer "coupon_period"
+    t.datetime "created_at", null: false
+    t.integer "duration"
+    t.decimal "face_value"
+    t.decimal "market_price"
+    t.date "maturity_date"
+    t.string "secid", null: false
+    t.string "short_name"
+    t.datetime "updated_at", null: false
+    t.decimal "ytm"
+    t.index ["secid"], name: "index_ofz_on_secid", unique: true
   end
 
   create_table "solid_cache_entries", force: :cascade do |t|

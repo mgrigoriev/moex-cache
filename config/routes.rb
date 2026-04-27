@@ -7,4 +7,5 @@ Rails.application.routes.draw do
 
   get "stocks.csv", to: "stocks#index"
   get "funds.csv",  to: "funds#index"
+  get "ofz.csv",    to: "ofz#index"
 end
