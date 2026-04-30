@@ -23,19 +23,27 @@
 - [x] GET /funds.csv
 - [x] GET /ofz.csv
 - [x] GET /corporate_bonds.csv
-- [x] CSV сериализаторы в app/serializers/
+- [x] CSV сериализаторы в `app/serializers/csv/` под неймспейсом `Csv`
+- [x] `Csv::BaseSerializer` — общая логика генерации CSV через `HEADERS.map { |f| record.public_send(f) }`
 
 ## Фаза 5: Тесты ✅
-- [x] RSpec + shoulda-matchers + WebMock
-- [x] Спеки моделей, сервисов, джобов, клиента (30 примеров)
+- [x] RSpec + shoulda-matchers + WebMock + factory_bot_rails
+- [x] Фабрики в spec/factories/
+- [x] Спеки моделей, сервисов, джобов, клиента, сериализаторов (38 примеров)
+- [x] Rubocop (rubocop-rails-omakase) — без нарушений
 
-## Фаза 6: Интеграция с Google Sheets
-- [ ] Тестирование CSV эндпоинтов с Google Sheets
-- [ ] Настройка CORS если необходимо
+## Фаза 6: Авторизация API
+- [ ] API-ключ через GET-параметр `?api_key=...`
+- [ ] Хранение в Rails credentials
+- [ ] before_action в ApplicationController, ответ 401 при невалидном/отсутствующем ключе
 
 ## Фаза 7: Деплой
 - [ ] Настройка production окружения
 - [ ] Деплой через Kamal
+
+## Надёжность
+- [ ] Retry-логика в джобах при недоступности MOEX API (встроенный retry в ActiveJob или rescue с логированием)
+- [ ] Кэширование ответов CSV эндпоинтов (Solid Cache, инвалидация после каждого успешного обновления)
 
 ## Будущие фазы
 - Currency (валюты) — интеграция с Google Finance
