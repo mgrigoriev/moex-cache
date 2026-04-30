@@ -378,6 +378,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   kamal
+  net-protocol
   pg (~> 1.1)
   puma (>= 5.0)
   rails (~> 8.1.3)
