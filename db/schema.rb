@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_27_003411) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_221509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_003411) do
     t.datetime "updated_at", null: false
     t.decimal "ytm"
     t.index ["secid"], name: "index_corporate_bonds_on_secid", unique: true
+  end
+
+  create_table "currencies", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "market_price", null: false
+    t.string "secid", null: false
+    t.datetime "updated_at", null: false
+    t.index ["secid"], name: "index_currencies_on_secid", unique: true
   end
 
   create_table "funds", force: :cascade do |t|

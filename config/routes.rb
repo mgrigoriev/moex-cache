@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   get "funds.csv",  to: "funds#index"
   get "ofz.csv",             to: "ofz#index"
   get "corporate_bonds.csv", to: "corporate_bonds#index"
+  get "currencies.csv",      to: "currencies#index"
 end

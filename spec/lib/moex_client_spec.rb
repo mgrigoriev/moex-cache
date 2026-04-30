@@ -44,4 +44,23 @@ RSpec.describe MoexClient do
       ])
     end
   end
+
+  describe "#fetch_currencies" do
+    before do
+      stub_request(:get, MoexClient::CURRENCIES_URL).to_return(body:
+        "USD000UTSTOM;74.9775;74.8806\n" \
+        "EUR_RUB__TOM;;87.7771\n"        \
+        "AMDRUB_TOM;20.5975;\n"          \
+        "EMPTY_TICKER;;\n"
+      )
+    end
+
+    it "uses LAST when present, falls back to MARKETPRICE, skips when both empty" do
+      expect(client.fetch_currencies).to eq([
+        { secid: "USD000UTSTOM", market_price: BigDecimal("74.9775") },
+        { secid: "EUR_RUB__TOM", market_price: BigDecimal("87.7771") },
+        { secid: "AMDRUB_TOM",   market_price: BigDecimal("20.5975") }
+      ])
+    end
+  end
 end

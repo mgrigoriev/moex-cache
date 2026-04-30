@@ -19,6 +19,10 @@ class MoexClient
   CORP_SECURITIES_URL = "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv" \
                         "?iss.meta=off&iss.only=securities&securities.columns=SECID,SHORTNAME,COUPONPERCENT,COUPONPERIOD,MATDATE,FACEVALUE,ACCRUEDINT"
 
+  CURRENCIES_URL = "https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities.csv" \
+                   "?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE" \
+                   "&securities=#{Currency::CODE_BY_SECID.keys.join(',')}"
+
   def fetch_stocks
     parse(fetch(STOCKS_URL))
   end
@@ -33,6 +37,16 @@ class MoexClient
 
   def fetch_corporate_bonds
     fetch_bonds(CORP_MARKETDATA_URL, CORP_SECURITIES_URL)
+  end
+
+  def fetch_currencies
+    fetch(CURRENCIES_URL).filter_map do |line|
+      secid, last, market_price = line.chomp.split(";")
+      price = last.presence || market_price.presence
+      next if secid.blank? || price.blank?
+
+      { secid: secid, market_price: BigDecimal(price) }
+    end
   end
 
   private

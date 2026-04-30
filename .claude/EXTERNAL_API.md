@@ -105,3 +105,26 @@ https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.csv?
 ```
 
 Поля и правила обработки идентичны ОФЗ.
+
+---
+
+### Курсы валют (CETS)
+
+**URL:**
+```
+https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities.csv?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE&securities=USD000UTSTOM,EUR_RUB__TOM,CNYRUB_TOM,AMDRUB_TOM
+```
+
+**Описание:** Курсы валют T+1 (`_TOM`-контракты) на валютном рынке MOEX. Запрос фильтрует только нужные тикеры.
+
+**Тикеры:**
+| Валюта | SECID |
+|--------|-------|
+| USD | `USD000UTSTOM` |
+| EUR | `EUR_RUB__TOM` |
+| CNY | `CNYRUB_TOM` |
+| AMD | `AMDRUB_TOM` |
+
+**Логика выбора цены:** `LAST` → если пусто, `MARKETPRICE`. Запись пропускается только если оба поля пустые.
+
+Причина: ни одно поле не заполнено для всех 4 валют. EUR давно не торгуется активно (есть только `MARKETPRICE`), AMD недостаточно ликвиден для расчёта `MARKETPRICE` (есть только `LAST`).
