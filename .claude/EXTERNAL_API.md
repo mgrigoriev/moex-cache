@@ -128,3 +128,37 @@ https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities.cs
 **Логика выбора цены:** `LAST` → если пусто, `MARKETPRICE`. Запись пропускается только если оба поля пустые.
 
 Причина: ни одно поле не заполнено для всех 4 валют. EUR давно не торгуется активно (есть только `MARKETPRICE`), AMD недостаточно ликвиден для расчёта `MARKETPRICE` (есть только `LAST`).
+
+---
+
+### Состав индексов MOEX (analytics)
+
+**URL (IMOEX):**
+```
+https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/IMOEX.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight
+```
+
+**URL (MOEXBC):**
+```
+https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/MOEXBC.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight
+```
+
+**Описание:** Состав индекса с весами. `IMOEX` — основной индекс MOEX (~50 бумаг), `MOEXBC` — Blue Chips (15 бумаг). Полный набор колонок в API: `indexid;tradedate;ticker;shortnames;secids;weight;tradingsession;trade_session_date`. Через `analytics.columns` сокращаем до двух нужных.
+
+**Формат ответа:** CSV, разделитель `;`. С `iss.meta=off` всё равно остаётся секционный заголовок `analytics` и строка с именами колонок (`ticker;weight`) — фильтруются по `ticker == "ticker"` или `blank?`.
+
+**Пример ответа (IMOEX):**
+```
+ticker;weight
+LKOH;16.52
+GAZP;9.56
+SBER;15.9
+```
+
+**Поля:**
+| Поле | Описание |
+|------|----------|
+| `ticker` | Тикер инструмента |
+| `weight` | Вес в индексе, % (MOEX отдаёт `16.52`; в БД храним долю — делим на 100, получаем `0.1652`) |
+
+**Стратегия обновления:** full refresh (`delete_all + insert_all` в транзакции). Состав ребалансируется ~раз в квартал; при ребалансировке тикеры выбывают, поэтому upsert не подходит. Если ответ пуст — пропускаем (защита от обнуления при сбое).

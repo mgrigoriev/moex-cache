@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_221509) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_01_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,6 +44,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_221509) do
     t.string "secid", null: false
     t.datetime "updated_at", null: false
     t.index ["secid"], name: "index_funds_on_secid", unique: true
+  end
+
+  create_table "imoex_components", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ticker", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "weight", precision: 7, scale: 6, null: false
+    t.index ["ticker"], name: "index_imoex_components_on_ticker", unique: true
+  end
+
+  create_table "moexbc_components", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ticker", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "weight", precision: 7, scale: 6, null: false
+    t.index ["ticker"], name: "index_moexbc_components_on_ticker", unique: true
   end
 
   create_table "ofz", force: :cascade do |t|

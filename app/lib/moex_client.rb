@@ -23,6 +23,12 @@ class MoexClient
                    "?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE" \
                    "&securities=#{Currency::TICKERS.keys.join(',')}"
 
+  IMOEX_URL = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/IMOEX.csv" \
+              "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight"
+
+  MOEXBC_URL = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/MOEXBC.csv" \
+               "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight"
+
   def fetch_stocks
     parse(fetch(STOCKS_URL))
   end
@@ -50,7 +56,24 @@ class MoexClient
     end
   end
 
+  def fetch_imoex
+    parse_index(fetch(IMOEX_URL))
+  end
+
+  def fetch_moexbc
+    parse_index(fetch(MOEXBC_URL))
+  end
+
   private
+
+  def parse_index(lines)
+    lines.filter_map do |line|
+      ticker, weight = line.chomp.split(";")
+      next if ticker.blank? || weight.blank? || ticker == "ticker"
+
+      { ticker: ticker, weight: BigDecimal(weight) / 100 }
+    end
+  end
 
   def parse(lines)
     lines.filter_map do |line|

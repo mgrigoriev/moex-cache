@@ -27,7 +27,8 @@ heroku run bin/rails runner 'UpdateXxxJob.perform_now'
 - `fetch(url)` — приватный, делает GET, форсит `Windows-1251 → UTF-8` (MOEX отдаёт `iso-8859-1` в заголовке, но фактически кириллица в `Windows-1251`).
 - `parse(lines)` — приватный, для simple-форматов (stocks/funds): `secid;price`.
 - `fetch_bonds(marketdata_url, securities_url)` — приватный, делает 2 запроса и мерджит по SECID.
-- Публичные методы: `fetch_stocks`, `fetch_funds`, `fetch_ofz`, `fetch_corporate_bonds`, `fetch_currencies`.
+- `parse_index(lines)` — приватный, для составов индексов: `ticker;weight`.
+- Публичные методы: `fetch_stocks`, `fetch_funds`, `fetch_ofz`, `fetch_corporate_bonds`, `fetch_currencies`, `fetch_imoex`, `fetch_moexbc`.
 
 URL'ы и точные параметры запросов — в `.claude/EXTERNAL_API.md`.
 
@@ -101,3 +102,4 @@ URL'ы и точные параметры запросов — в `.claude/EXTER
 - **`update_only` в upsert** — избегаем обновления `created_at` и других полей которые не должны меняться. Также фиксит баг с дублированием `updated_at` в SQL.
 - **BigDecimal для цен** — финансовые данные требуют точной десятичной арифметики, Float дал бы ошибки представления.
 - **Custom `table_name = "ofz"` для модели Ofz** — Rails плюрализовал бы в "ofzs", выглядит криво.
+- **Full refresh вместо upsert для составов индексов** (`UpdateImoex`, `UpdateMoexbc`): состав индекса меняется редко, но при ребалансировке тикеры выбывают — `delete_all + insert_all` в транзакции проще, чем upsert + догоняющая чистка. Если MOEX вернул пустой список, ничего не делаем (защита от обнуления при сбое внешнего API).

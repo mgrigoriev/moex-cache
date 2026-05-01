@@ -63,4 +63,40 @@ RSpec.describe MoexClient do
       ])
     end
   end
+
+  describe "#fetch_imoex" do
+    before do
+      stub_request(:get, MoexClient::IMOEX_URL).to_return(body:
+        "ticker;weight\n"  \
+        "LKOH;16.52\n"     \
+        "GAZP;9.56\n"      \
+        ";1.5\n"           \
+        "EMPTY;\n"
+      )
+    end
+
+    it "parses ticker and weight as a fraction, skips header and blank rows" do
+      expect(client.fetch_imoex).to eq([
+        { ticker: "LKOH", weight: BigDecimal("0.1652") },
+        { ticker: "GAZP", weight: BigDecimal("0.0956") }
+      ])
+    end
+  end
+
+  describe "#fetch_moexbc" do
+    before do
+      stub_request(:get, MoexClient::MOEXBC_URL).to_return(body:
+        "ticker;weight\n" \
+        "LKOH;16.49\n"    \
+        "SBER;15.9\n"
+      )
+    end
+
+    it "parses ticker and weight as a fraction" do
+      expect(client.fetch_moexbc).to eq([
+        { ticker: "LKOH", weight: BigDecimal("0.1649") },
+        { ticker: "SBER", weight: BigDecimal("0.159") }
+      ])
+    end
+  end
 end

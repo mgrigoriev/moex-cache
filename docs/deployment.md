@@ -57,6 +57,7 @@ web: bundle exec puma -C config/puma.rb
 | `:20` | `bin/rails runner 'UpdateOfzJob.perform_now'` |
 | `:30` | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
 | `:40` | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
+| `:50` | `bin/rails runner 'UpdateImoexJob.perform_now; UpdateMoexbcJob.perform_now'` |
 
 **Почему hourly, а не daily:** Heroku Scheduler — best-effort сервис, иногда молча скипает задачи. Hourly даёт самовосстановление: пропущенный тик подхватится через час. Стоимость пренебрежимая — ~3 сек × 24 = 72 сек dyno-time в день.
 

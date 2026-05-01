@@ -10,4 +10,6 @@ Rails.application.routes.draw do
   get "ofz.csv",             to: "ofz#index"
   get "corporate_bonds.csv", to: "corporate_bonds#index"
   get "currencies.csv",      to: "currencies#index"
+  get "imoex.csv",           to: "imoex#index"
+  get "moexbc.csv",          to: "moexbc#index"
 end
