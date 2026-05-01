@@ -48,23 +48,21 @@ web: bundle exec puma -C config/puma.rb
 
 Открыть UI: `heroku addons:open scheduler`.
 
-Расписание — каждый час, со смещением 10 минут между задачами:
+Расписание:
 
 | Время | Команда |
 |-------|---------|
-| `:00` | `bin/rails runner 'UpdateStocksJob.perform_now'` |
-| `:10` | `bin/rails runner 'UpdateFundsJob.perform_now'` |
-| `:20` | `bin/rails runner 'UpdateOfzJob.perform_now'` |
-| `:30` | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
-| `:40` | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
-| `:50` | `bin/rails runner 'UpdateImoexJob.perform_now; UpdateMoexbcJob.perform_now'` |
-| daily 06:00 UTC | `bin/rails runner 'UpdateDividendForecastsJob.perform_now'` |
+| hourly `:00` | `bin/rails runner 'UpdateStocksJob.perform_now'` |
+| hourly `:10` | `bin/rails runner 'UpdateFundsJob.perform_now'` |
+| hourly `:20` | `bin/rails runner 'UpdateOfzJob.perform_now'` |
+| hourly `:30` | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
+| hourly `:40` | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
+| daily 06:00 UTC | `bin/rails runner 'UpdateImoexJob.perform_now; UpdateMoexbcJob.perform_now'` |
+| daily 06:30 UTC | `bin/rails runner 'UpdateDividendForecastsJob.perform_now'` |
 
-**Почему hourly, а не daily:** Heroku Scheduler — best-effort сервис, иногда молча скипает задачи. Hourly даёт самовосстановление: пропущенный тик подхватится через час. Стоимость пренебрежимая — ~3 сек × 24 = 72 сек dyno-time в день.
+**Котировки — hourly, со смещением 10 мин:** цены меняются в течение дня, hourly даёт самовосстановление при пропущенных тиках Heroku Scheduler (он best-effort). Смещение — меньше нагрузки на MOEX за один момент, проще читать логи. Стоимость пренебрежимая.
 
-**Почему смещение 10 мин:** меньше нагрузки на MOEX за один момент, проще читать логи.
-
-**Прогноз дивидендов** — отдельный daily-таск, потому что прогнозы меняются редко (~раз в квартал) и сам job делает ~50 HTTP-запросов с задержкой 1с (поминутный hourly бы зря жёг dyno-time). Время суток некритично, 06:00 UTC выбрано чтобы не пересекаться с активными часовыми тиками MOEX.
+**Составы индексов и дивиденды — daily:** ребалансировка индексов происходит ~раз в квартал, прогноз дивидендов меняется тоже редко. Hourly не нужен. 06:00/06:30 UTC выбрано чтобы не пересекаться с активными часовыми тиками MOEX (ранним утром по Москве рынок ещё не открыт).
 
 Heroku Scheduler ограничения:
 - Daily — гранулярность 30 минут
