@@ -21,7 +21,7 @@ class MoexClient
 
   CURRENCIES_URL = "https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities.csv" \
                    "?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE" \
-                   "&securities=#{Currency::CODE_BY_SECID.keys.join(',')}"
+                   "&securities=#{Currency::TICKERS.keys.join(',')}"
 
   def fetch_stocks
     parse(fetch(STOCKS_URL))
@@ -45,7 +45,8 @@ class MoexClient
       price = last.presence || market_price.presence
       next if secid.blank? || price.blank?
 
-      { secid: secid, market_price: BigDecimal(price) }
+      lot = Currency::TICKERS.dig(secid, :lot) || 1
+      { secid: secid, market_price: BigDecimal(price) / lot }
     end
   end
 

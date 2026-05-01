@@ -55,11 +55,11 @@ RSpec.describe MoexClient do
       )
     end
 
-    it "uses LAST when present, falls back to MARKETPRICE, skips when both empty" do
+    it "uses LAST when present, falls back to MARKETPRICE, divides by lot, skips when both empty" do
       expect(client.fetch_currencies).to eq([
         { secid: "USD000UTSTOM", market_price: BigDecimal("74.9775") },
         { secid: "EUR_RUB__TOM", market_price: BigDecimal("87.7771") },
-        { secid: "AMDRUB_TOM",   market_price: BigDecimal("20.5975") }
+        { secid: "AMDRUB_TOM",   market_price: BigDecimal("0.205975") }
       ])
     end
   end

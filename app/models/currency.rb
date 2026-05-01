@@ -1,15 +1,15 @@
 class Currency < ApplicationRecord
-  CODE_BY_SECID = {
-    "USD000UTSTOM" => "USD",
-    "EUR_RUB__TOM" => "EUR",
-    "CNYRUB_TOM"   => "CNY",
-    "AMDRUB_TOM"   => "AMD"
+  TICKERS = {
+    "USD000UTSTOM" => { code: "USD", lot: 1 },
+    "EUR_RUB__TOM" => { code: "EUR", lot: 1 },
+    "CNYRUB_TOM"   => { code: "CNY", lot: 1 },
+    "AMDRUB_TOM"   => { code: "AMD", lot: 100 }
   }.freeze
 
   validates :secid, presence: true, uniqueness: true
   validates :market_price, presence: true
 
   def code
-    CODE_BY_SECID[secid]
+    TICKERS.dig(secid, :code)
   end
 end

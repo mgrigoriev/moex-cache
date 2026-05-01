@@ -65,14 +65,16 @@ EUR,87.7771
 USD,74.9775
 ```
 
-Маппинг секций определён в `Currency::CODE_BY_SECID`:
+Маппинг тикеров определён в `Currency::TICKERS`:
 
-| MOEX SECID | Code |
-|------------|------|
-| `USD000UTSTOM` | USD |
-| `EUR_RUB__TOM` | EUR |
-| `CNYRUB_TOM` | CNY |
-| `AMDRUB_TOM` | AMD |
+| MOEX SECID | Code | Lot |
+|------------|------|-----|
+| `USD000UTSTOM` | USD | 1 |
+| `EUR_RUB__TOM` | EUR | 1 |
+| `CNYRUB_TOM` | CNY | 1 |
+| `AMDRUB_TOM` | AMD | 100 |
+
+`lot` — размер лота на MOEX. Для AMD котировка идёт за 100 драм, при сохранении делим на 100, чтобы в БД был курс за 1 единицу.
 
 ## Использование в Google Sheets
 
