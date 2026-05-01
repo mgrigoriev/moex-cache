@@ -24,10 +24,10 @@ class MoexClient
                    "&securities=#{Currency::TICKERS.keys.join(',')}"
 
   IMOEX_URL = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/IMOEX.csv" \
-              "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight"
+              "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight&limit=100"
 
   MOEXBC_URL = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/MOEXBC.csv" \
-               "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight"
+               "?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight&limit=100"
 
   def fetch_stocks
     parse(fetch(STOCKS_URL))

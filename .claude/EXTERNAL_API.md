@@ -135,15 +135,15 @@ https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities.cs
 
 **URL (IMOEX):**
 ```
-https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/IMOEX.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight
+https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/IMOEX.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight&limit=100
 ```
 
 **URL (MOEXBC):**
 ```
-https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/MOEXBC.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight
+https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/MOEXBC.csv?iss.meta=off&iss.only=analytics&analytics.columns=ticker,weight&limit=100
 ```
 
-**Описание:** Состав индекса с весами. `IMOEX` — основной индекс MOEX (~50 бумаг), `MOEXBC` — Blue Chips (15 бумаг). Полный набор колонок в API: `indexid;tradedate;ticker;shortnames;secids;weight;tradingsession;trade_session_date`. Через `analytics.columns` сокращаем до двух нужных.
+**Описание:** Состав индекса с весами. `IMOEX` — основной индекс MOEX (~50 бумаг), `MOEXBC` — Blue Chips (15 бумаг). Полный набор колонок в API: `indexid;tradedate;ticker;shortnames;secids;weight;tradingsession;trade_session_date`. Через `analytics.columns` сокращаем до двух нужных. **Важно:** ISS по умолчанию режет ответ на 20 строк, нужен `limit=100` чтобы получить весь состав.
 
 **Формат ответа:** CSV, разделитель `;`. С `iss.meta=off` всё равно остаётся секционный заголовок `analytics` и строка с именами колонок (`ticker;weight`) — фильтруются по `ticker == "ticker"` или `blank?`.
 
