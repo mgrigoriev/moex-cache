@@ -3,6 +3,7 @@ module Csv
     HEADERS = %w[
       secid
       market_price
+      dividend_forecast
     ].freeze
   end
 end

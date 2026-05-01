@@ -62,6 +62,24 @@ Stock.order(updated_at: :desc).first.updated_at  # когда последний
 Currency.all.map { |c| [c.code, c.market_price] }
 ```
 
+## Управление портфелем
+
+`UpdateDividendForecastsJob` обновляет `dividend_forecast` только для акций с `in_portfolio: true`. Начальный состав засеян миграцией `20260501150000_set_initial_portfolio_stocks.rb` (19 тикеров).
+
+**Дальнейшие изменения портфеля — только через консоль, не через новые миграции.** Миграции — для схемы и одноразовых backfill'ов; рутинная правка портфеля через них захламит историю.
+
+```ruby
+Stock.in_portfolio.pluck(:secid)                          # текущий состав
+Stock.find_by(secid: "SBER").update!(in_portfolio: true)  # добавить в портфель
+Stock.find_by(secid: "SBER").update!(in_portfolio: false) # убрать
+Stock.where(secid: %w[SBER GAZP LKOH]).update_all(in_portfolio: true)  # пакетно
+```
+
+После добавления нового тикера — дёрнуть джоб, чтобы заполнить прогноз сразу:
+```bash
+heroku run "bin/rails runner 'UpdateDividendForecastsJob.perform_now'"
+```
+
 ## Env vars
 
 ```bash

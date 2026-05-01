@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_01_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_01_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -212,9 +212,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_120001) do
 
   create_table "stocks", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.decimal "dividend_forecast", precision: 10, scale: 2
+    t.boolean "in_portfolio", default: false, null: false
     t.decimal "market_price", null: false
     t.string "secid", null: false
     t.datetime "updated_at", null: false
+    t.index ["in_portfolio"], name: "index_stocks_on_in_portfolio"
     t.index ["secid"], name: "index_stocks_on_secid", unique: true
   end
 

@@ -58,10 +58,13 @@ web: bundle exec puma -C config/puma.rb
 | `:30` | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
 | `:40` | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
 | `:50` | `bin/rails runner 'UpdateImoexJob.perform_now; UpdateMoexbcJob.perform_now'` |
+| daily 06:00 UTC | `bin/rails runner 'UpdateDividendForecastsJob.perform_now'` |
 
 **Почему hourly, а не daily:** Heroku Scheduler — best-effort сервис, иногда молча скипает задачи. Hourly даёт самовосстановление: пропущенный тик подхватится через час. Стоимость пренебрежимая — ~3 сек × 24 = 72 сек dyno-time в день.
 
 **Почему смещение 10 мин:** меньше нагрузки на MOEX за один момент, проще читать логи.
+
+**Прогноз дивидендов** — отдельный daily-таск, потому что прогнозы меняются редко (~раз в квартал) и сам job делает ~50 HTTP-запросов с задержкой 1с (поминутный hourly бы зря жёг dyno-time). Время суток некритично, 06:00 UTC выбрано чтобы не пересекаться с активными часовыми тиками MOEX.
 
 Heroku Scheduler ограничения:
 - Daily — гранулярность 30 минут

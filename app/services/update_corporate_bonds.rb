@@ -5,5 +5,6 @@ class UpdateCorporateBonds
       short_name market_price ytm duration
       coupon_percent coupon_period maturity_date face_value accrued_interest
     ])
+    Rails.logger.info("UpdateCorporateBonds: upserted #{bonds.size} records")
   end
 end
