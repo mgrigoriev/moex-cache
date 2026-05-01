@@ -48,22 +48,24 @@ web: bundle exec puma -C config/puma.rb
 
 Открыть UI: `heroku addons:open scheduler`.
 
-Текущее расписание (08:00 UTC = 11:00 МСК, час после открытия торгов):
+Расписание — каждый час, со смещением 10 минут между задачами:
 
-| Время UTC | Команда |
-|-----------|---------|
-| 08:00 | `bin/rails runner 'UpdateStocksJob.perform_now'` |
-| 08:00 | `bin/rails runner 'UpdateFundsJob.perform_now'` |
-| 08:00 | `bin/rails runner 'UpdateOfzJob.perform_now'` |
-| 08:00 | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
-| 08:00 | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
+| Время | Команда |
+|-------|---------|
+| `:00` | `bin/rails runner 'UpdateStocksJob.perform_now'` |
+| `:10` | `bin/rails runner 'UpdateFundsJob.perform_now'` |
+| `:20` | `bin/rails runner 'UpdateOfzJob.perform_now'` |
+| `:30` | `bin/rails runner 'UpdateCorporateBondsJob.perform_now'` |
+| `:40` | `bin/rails runner 'UpdateCurrenciesJob.perform_now'` |
 
-Все 5 запускаются параллельно (5 одновременных one-off dyno) — биллинг посекундный, так дешевле и ничему не мешает.
+**Почему hourly, а не daily:** Heroku Scheduler — best-effort сервис, иногда молча скипает задачи. Hourly даёт самовосстановление: пропущенный тик подхватится через час. Стоимость пренебрежимая — ~3 сек × 24 = 72 сек dyno-time в день.
+
+**Почему смещение 10 мин:** меньше нагрузки на MOEX за один момент, проще читать логи.
 
 Heroku Scheduler ограничения:
-- Гранулярность для daily — **30 минут**
-- Минимальный интервал — every 10 minutes (есть ещё every hour, every day)
-- "Каждые 4 часа" нативно нельзя — нужно либо 6 daily-задач, либо other add-on
+- Daily — гранулярность 30 минут
+- Hourly — гранулярность 10 минут (`:00`, `:10`, `:20`, `:30`, `:40`, `:50`)
+- Минимальный интервал — every 10 minutes
 
 ## Деплой
 
