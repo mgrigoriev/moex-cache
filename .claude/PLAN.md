@@ -76,10 +76,26 @@
 - [x] Расширение `/stocks.csv` третьей колонкой
 - [x] Документация в `docs/operations.md`: управление портфелем через консоль (а не миграции)
 
+## Следующая фаза: дата ближайших дивидендов
+
+**Зачем:** видеть в `/stocks.csv` ex-dividend дату для каждой портфельной акции — чтобы планировать реинвестирование сразу после дивидендного гэпа (гэп = ex-div дата = registry close − 2 торговых дня).
+
+**План реализации:**
+- Миграция: добавить `next_dividend_date` (date, nullable) и `next_dividend_amount` (decimal, nullable) в `stocks`. **Хранить именно ex-div дату**, не registry close — пользователю нужна готовая к действию дата.
+- `MoexClient#fetch_dividends(secid)` → запрос `https://iss.moex.com/iss/securities/<SECID>/dividends.json`, парсинг массива `dividends` (поля `registryclosedate`, `value`, `currencyid`).
+- Сервис `UpdateNextDividends`: итерация по `Stock.in_portfolio`, для каждого — фильтр `registryclosedate >= today`, минимум по дате, конвертация в ex-div (`registryclosedate - 2.business_days`). При отсутствии будущих выплат — пишем `nil`. Per-ticker rescue, прогресс-логи `[N/total]` как у `UpdateDividendForecasts`.
+- Job `UpdateNextDividendsJob`, Heroku Scheduler daily 06:45 UTC (после дивидендных прогнозов).
+- Расширение `Csv::StockSerializer` двумя колонками.
+- Спеки: client (формат JSON, фильтрация прошедших, отсутствие записей, ошибки), сервис (ex-div вычисление, per-ticker robustness), сериалайзер.
+- Документация: `docs/api.md`, `.claude/EXTERNAL_API.md` (новый раздел про `/iss/securities/<SECID>/dividends.json`), `docs/operations.md`.
+
+**Открытый вопрос:** как считать "торговые дни" для ex-div. Для MVP можно просто `registry - 2.days` (календарных) — будет неточно вокруг выходных, но в рамках погрешности "пары дней до гэпа" приемлемо. Точнее — таблица праздников MOEX, отдельный gem типа `business_time`. Решить когда начнём.
+
 ## Бэклог (по запросу)
 
 Не сделано, не блокирует. Открыть только если появится боль.
 
 - **Retry-логика в джобах при недоступности MOEX.** Сейчас если MOEX отдаёт 503, batch-джобы (`UpdateStocks`/`UpdateFunds`/`UpdateOfz`/`UpdateCorporateBonds`/`UpdateCurrencies`) падают целиком. У `UpdateImoex`/`UpdateMoexbc` есть guard от пустого ответа, у дивидендов — per-ticker rescue. Hourly расписание уже даёт самовосстановление — реальной боли нет. Можно добавить `retry_on Net::OpenTimeout, wait: :exponentially_longer` в `ApplicationJob` если станет шумно в логах.
 - **Кэширование CSV-ответов через Solid Cache.** Сейчас каждый `/stocks.csv` запрашивает все 250+ строк и сериализует в CSV. Под текущей нагрузкой (Sheets раз в 30 мин) это копейки. Имеет смысл если появится больше внешних потребителей или несколько таблиц.
-- **Дополнительные источники данных.** Например — фактические дивидендные выплаты (история), календарь корпоративных событий, новости. По мере необходимости.
+- **Дивидендная история и аналитика стабильности.** На базе того же `/dividends.json` посчитать "платил X лет подряд", CAGR, метрику пропусков. Для классификации портфеля.
+- **Календарь корпоративных событий, новости.** Источники: e-disclosure.ru (RSS, обязательное раскрытие), MOEX `iss/events`, Telegram-каналы. Не приоритет для портфельного мониторинга.
